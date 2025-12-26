@@ -2,7 +2,7 @@ import { motion } from 'motion/react';
 import { ArrowLeft, ChevronLeft, ChevronRight, Users, FileText } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
-import { ProjectData } from './ProjectData';
+import { ProjectData, ProjectSection } from './ProjectData';
 
 interface ProjectDetailPageProps {
   project: ProjectData;
@@ -25,8 +25,6 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
     );
   };
 
-  // যদি pdfLink এ directly Drive preview link রাখো:
-  // pdfLink: "https://drive.google.com/file/d/FILE_ID/preview"
   const pdfPreviewUrl = project.pdfLink;
 
   return (
@@ -59,7 +57,7 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="fixed top-6 left-6 z-50"
+        className="fixed top-20 left-6 z-50"
       >
         <button
           onClick={onBack}
@@ -70,7 +68,7 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
         </button>
       </motion.div>
 
-      <div className="container mx-auto px-4 pt-24 pb-24 max-w-6xl">
+      <div className="container mx-auto px-4 pt-20 pb-24 max-w-6xl">
         {/* Image Carousel */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -160,7 +158,7 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
         </motion.div>
 
         {/* Team Members Card */}
-        {project.teamMembers.length > 0 && (
+        {project.teamMembers && project.teamMembers.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -208,71 +206,140 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
           </motion.div>
         )}
 
-        {/* PDF/Text Toggle */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mb-8 flex gap-4 justify-center flex-wrap"
-        >
-          <button
-            type="button"
-            onClick={() => setShowPdfViewer(false)}
-            className={`px-6 py-3 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2 ring-2 ring-transparent hover:ring-[#2ECC71] ${
-              !showPdfViewer
-                ? 'bg-[#2ECC71] text-white shadow-[0_0_25px_rgba(46,204,113,0.6)]'
-                : 'bg-white/10 backdrop-blur-sm text-[#2ECC71] border border-[#2ECC71]/50 hover:bg-white/20'
-            }`}
+        {/* PDF/Text Toggle - Only show if pdfLink exists */}
+        {project.pdfLink && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="mb-8 flex gap-4 justify-center flex-wrap"
           >
-            📄 Text View
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowPdfViewer(true)}
-            className={`px-6 py-3 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2 ring-2 ring-transparent hover:ring-[#2ECC71] ${
-              showPdfViewer
-                ? 'bg-[#2ECC71] text-white shadow-[0_0_25px_rgba(46,204,113,0.6)]'
-                : 'bg-white/10 backdrop-blur-sm text-[#2ECC71] border border-[#2ECC71]/50 hover:bg-white/20'
-            }`}
-          >
-            <FileText className="w-5 h-5" />
-            PDF View
-          </button>
-        </motion.div>
+            <button
+              type="button"
+              onClick={() => setShowPdfViewer(false)}
+              className={`px-6 py-3 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2 ring-2 ring-transparent hover:ring-[#2ECC71] ${
+                !showPdfViewer
+                  ? 'bg-[#2ECC71] text-white shadow-[0_0_25px_rgba(46,204,113,0.6)]'
+                  : 'bg-white/10 backdrop-blur-sm text-[#2ECC71] border border-[#2ECC71]/50 hover:bg-white/20'
+              }`}
+            >
+              📄 Content View
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowPdfViewer(true)}
+              className={`px-6 py-3 rounded-xl font-semibold shadow-lg transition-all flex items-center gap-2 ring-2 ring-transparent hover:ring-[#2ECC71] ${
+                showPdfViewer
+                  ? 'bg-[#2ECC71] text-white shadow-[0_0_25px_rgba(46,204,113,0.6)]'
+                  : 'bg-white/10 backdrop-blur-sm text-[#2ECC71] border border-[#2ECC71]/50 hover:bg-white/20'
+              }`}
+            >
+              <FileText className="w-5 h-5" />
+              PDF View
+            </button>
+          </motion.div>
+        )}
 
-        {/* Text Content */}
+        {/* Content View - Main Description + Dynamic Sections */}
         {!showPdfViewer && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            key="text-view"
+            key="content-view"
+            className="space-y-12"
           >
-            <Card className="bg-gradient-to-br from-[rgba(46,204,113,0.05)] to-transparent border-[rgba(46,204,113,0.2)] overflow-hidden backdrop-blur-sm">
-              <CardContent className="p-8 md:p-12">
-                <h2 className="text-2xl font-bold text-[#2ECC71] mb-8 flex items-center gap-3">
-                  <div className="w-2 h-8 bg-[#2ECC71] rounded-full" />
-                  Project Overview
-                </h2>
-                <div className="space-y-6 text-justify">
-                  {project.fullDescription.split('\n\n').map((paragraph, idx) => (
-                    <motion.p
-                      key={idx}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.6 + idx * 0.1 }}
-                      className="text-gray-300 leading-relaxed text-base md:text-lg max-w-4xl"
-                    >
-                      {paragraph.trim()}
-                    </motion.p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            {/* Main Project Overview */}
+            {project.fullDescription && (
+              <Card className="bg-gradient-to-br from-[rgba(46,204,113,0.05)] to-transparent border-[rgba(46,204,113,0.2)] overflow-hidden backdrop-blur-sm">
+                <CardContent className="p-8 md:p-12">
+                  <h2 className="text-2xl font-bold text-[#2ECC71] mb-8 flex items-center gap-3">
+                    <div className="w-2 h-8 bg-[#2ECC71] rounded-full" />
+                    Project Overview
+                  </h2>
+                  <div className="space-y-6 text-justify">
+                    {project.fullDescription.split('\n\n').map((paragraph, idx) => (
+                      <motion.p
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.6 + idx * 0.1 }}
+                        className="text-gray-300 leading-relaxed text-base md:text-lg"
+                      >
+                        {paragraph.trim()}
+                      </motion.p>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Dynamic Sections from Firebase */}
+            {project.sections && project.sections.length > 0 && project.sections.map((section, sectionIdx) => (
+              <motion.div
+                key={sectionIdx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.6 + sectionIdx * 0.1 }}
+              >
+                <Card className="bg-gradient-to-br from-[rgba(46,204,113,0.05)] to-transparent border-[rgba(46,204,113,0.2)] overflow-hidden backdrop-blur-sm">
+                  <CardContent className="p-8 md:p-12">
+                    {/* Section Name/Heading */}
+                    {section.heading && (
+                      <h2 className="text-2xl font-bold text-[#2ECC71] mb-8 flex items-center gap-3">
+                        <div className="w-2 h-8 bg-[#2ECC71] rounded-full" />
+                        {section.heading}
+                      </h2>
+                    )}
+
+                    {/* Section Description */}
+                    {section.description && (
+                      <div className="space-y-6 text-justify mb-8">
+                        {section.description.split('\n\n').map((paragraph, idx) => (
+                          <p
+                            key={idx}
+                            className="text-gray-300 leading-relaxed text-base md:text-lg"
+                          >
+                            {paragraph.trim()}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Section Images Grid */}
+                    {section.images && section.images.length > 0 && (
+                      <div className={`grid gap-4 ${
+                        section.images.length === 1 ? 'grid-cols-1' :
+                        section.images.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
+                        section.images.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
+                        'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                      }`}>
+                        {section.images.map((image, imgIdx) => (
+                          <motion.div
+                            key={imgIdx}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.5, delay: imgIdx * 0.1 }}
+                            className="relative group overflow-hidden rounded-xl shadow-lg hover:shadow-[0_0_30px_0_rgba(46,204,113,0.4)] transition-all"
+                          >
+                            <img
+                              src={image}
+                              alt={`${section.heading || 'Section'} - Image ${imgIdx + 1}`}
+                              className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
           </motion.div>
         )}
 
-        {/* PDF Viewer – শুধু preview */}
+        {/* PDF Viewer */}
         {showPdfViewer && pdfPreviewUrl && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -299,20 +366,16 @@ export function ProjectDetailPage({ project, onBack }: ProjectDetailPageProps) {
       </div>
 
       {/* Floating Back Button (bottom) */}
-      <motion.div
+       <motion.button
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, delay: 0.8 }}
-        className="fixed right-6 bottom-6 md:right-8 md:bottom-8 z-40"
+        onClick={onBack}
+        className="fixed right-6 bottom-6 md:right-8 md:bottom-8 z-50 px-6 py-3 bg-[#2ECC71] hover:bg-[#27AE60] text-white rounded-full shadow-[0_0_30px_0_rgba(46,204,113,0.5)] hover:shadow-[0_0_40px_0_rgba(46,204,113,0.7)] transition-all font-semibold flex items-center gap-2"
       >
-        <button
-          onClick={onBack}
-          className="px-6 py-3 bg-[#2ECC71] hover:bg-[#27AE60] text-white rounded-full shadow-[0_0_30px_0_rgba(46,204,113,0.5)] hover:shadow-[0_0_40px_0_rgba(46,204,113,0.7)] transition-all font-semibold flex items-center gap-2"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back
-        </button>
-      </motion.div>
+        <ArrowLeft className="w-5 h-5" />
+        Back
+      </motion.button>
     </main>
   );
 }
