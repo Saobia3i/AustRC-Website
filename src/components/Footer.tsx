@@ -10,15 +10,12 @@ interface FooterProps {
 export function Footer({ theme = 'dark' }: FooterProps) {
   const links = {
     quickLinks: [
-      { name: 'Home', href: '#home' },
-      { name: 'About', href: '#about' },
-      { name: 'Events', href: '#events' },
-      { name: 'Programs', href: '#programs' },
+      { name: 'About', href: '/about' },
+      { name: 'Events', href: '/activities/events' },
     ],
     resources: [
-      { name: 'Projects', href: '#projects' },
-      { name: 'Research', href: '#research' },
-      { name: 'Mentorship', href: '#mentorship' },
+      { name: 'Research & Projects', href: '/research-projects' },
+      { name: 'Educational Programs', href: '/activities/educational-activities' },
       { name: 'Contact', href: '#contact' },
     ],
   };
@@ -80,13 +77,13 @@ export function Footer({ theme = 'dark' }: FooterProps) {
               <ul className="space-y-2">
                 {links.quickLinks.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
                     >
                       <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
                       {link.name}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -103,13 +100,23 @@ export function Footer({ theme = 'dark' }: FooterProps) {
               <ul className="space-y-2">
                 {links.resources.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
-                    >
-                      <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
-                      {link.name}
-                    </a>
+                    {link.href.startsWith('/') ? (
+                      <Link
+                        to={link.href}
+                        className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
+                      >
+                        <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
+                      >
+                        <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
+                        {link.name}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
