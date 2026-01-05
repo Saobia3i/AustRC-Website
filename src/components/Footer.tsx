@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
-import { Facebook, Instagram, Linkedin, Youtube, Github, Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Youtube, Github, Mail, MapPin, Phone, Code2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import logo from '@/assets/logo.png';
 
 interface FooterProps {
@@ -9,15 +10,12 @@ interface FooterProps {
 export function Footer({ theme = 'dark' }: FooterProps) {
   const links = {
     quickLinks: [
-      { name: 'Home', href: '#home' },
-      { name: 'About', href: '#about' },
-      { name: 'Events', href: '#events' },
-      { name: 'Programs', href: '#programs' },
+      { name: 'About', href: '/about' },
+      { name: 'Events', href: '/activities/events' },
     ],
     resources: [
-      { name: 'Projects', href: '#projects' },
-      { name: 'Research', href: '#research' },
-      { name: 'Mentorship', href: '#mentorship' },
+      { name: 'Research & Projects', href: '/research-projects' },
+      { name: 'Educational Programs', href: '/activities/educational-activities' },
       { name: 'Contact', href: '#contact' },
     ],
   };
@@ -79,13 +77,13 @@ export function Footer({ theme = 'dark' }: FooterProps) {
               <ul className="space-y-2">
                 {links.quickLinks.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
+                    <Link
+                      to={link.href}
                       className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
                     >
                       <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
                       {link.name}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -102,13 +100,23 @@ export function Footer({ theme = 'dark' }: FooterProps) {
               <ul className="space-y-2">
                 {links.resources.map((link) => (
                   <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
-                    >
-                      <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
-                      {link.name}
-                    </a>
+                    {link.href.startsWith('/') ? (
+                      <Link
+                        to={link.href}
+                        className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
+                      >
+                        <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
+                        {link.name}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        className={`${isDark ? 'text-gray-400' : 'text-gray-600'} hover:text-[#2ECC71] transition-colors text-sm flex items-center gap-2 group`}
+                      >
+                        <span className="w-0 h-0.5 bg-[#2ECC71] group-hover:w-4 transition-all" />
+                        {link.name}
+                      </a>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -151,9 +159,21 @@ export function Footer({ theme = 'dark' }: FooterProps) {
               <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
                 © 2025 Aust Robotics Club. All rights reserved.
               </p>
-              <p className="text-[#2ECC71] text-sm">
-                Developed by AUSTRC Web Development Team
-              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <p className="text-[#2ECC71] text-sm">
+                  Developed by AUSTRC Web Development Team
+                </p>
+                <Link to="/developers">
+                  <motion.button
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-[rgba(46,204,113,0.1)] to-[rgba(39,174,96,0.1)] hover:from-[#2ECC71] hover:to-[#27AE60] border border-[rgba(46,204,113,0.4)] hover:border-[#2ECC71] text-[#2ECC71] hover:text-black px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-[0_0_20px_rgba(46,204,113,0.4)]"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Code2 className="w-4 h-4" />
+                    Meet our Developers
+                  </motion.button>
+                </Link>
+              </div>
             </div>
           </motion.div>
         </div>
